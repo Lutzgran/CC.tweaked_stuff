@@ -13,7 +13,7 @@ local function ETurn(direction_letter, distance)
     return "direction letter needs to be h or l"
 end
 
-local function Emove(direction_letter, distance)
+local function EMove(direction_letter, distance)
 
     if direction_letter = f
       for i = distance,1,-1
