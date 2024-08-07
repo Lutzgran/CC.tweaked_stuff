@@ -1,64 +1,60 @@
-
-
    --needed to make a mining script that didnt mess up just because the chunk got unloaded or the server restarted
    --first make a folder for the settings
 
-
-
-   
+local area = 0
 local depth = 0
 local dir = 0
 local xPos,zPos = 0,0
 
 local goTo
-local refuel
+local Fuel
+local fuel_amount = ((2*xPos+zPos+depth)7200)
 
 
-
-
-
-function trunRight()
+local function trunRight()
    if dir == 3 then
       dir = 0
    else
-      dir += 1
+      dir = dir +1
    turtle.turnRight()
+    end
 end
-
-function trunLeft()
+local function trunLeft()
    if dir == 0 then
       dir = 3
    else
-      dir -= 1
+      dir = dir -1
    turtle.turnRight()
+    end
 end
 
 
 
+    
+local function refuel(lowFuel,returned)
 
+    if lowFuel then
+    goTo(0,0,0,0)
+    Fuel = true
 
-      
+    elseif returned then
+    Fuel = true
+    end
+    
+    if Fuel then
+    trunRight()
+    turtle.select(1)
+    turrle.suck()
+    turtle.refuel()
+    trunRight()
+   end
 
-
-Local refuel(LowFuel,returned)
-
-   if lowFuel then
-      goTo(0,0,0,0,0)
-      local Fuel = true
-   elseif returned then
-      local Fuel = true
-
-   if Fuel then
-      
-
-
-
-
-
-
-
-
-
+    if turtle.getFuelLevel() < fuel_amount then
+        return
+            print("need more fuel!!!")
+    
+    end
+end
 
 
 
@@ -66,8 +62,3 @@ Local refuel(LowFuel,returned)
 
 
 function offline_mining(area)
-
-   
-
-
-
