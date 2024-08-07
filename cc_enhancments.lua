@@ -11,28 +11,28 @@ local function ETurn(direction_letter, distance)
       turtle.turnLeft()
   else
     return "direction letter needs to be h or l"
-  end
+end
 
-  local function Emove(direction_letter, distance)
+local function Emove(direction_letter, distance)
 
-      if direction_letter = f
-        for i = distance,1,-1
-          turtle.forward()
+    if direction_letter = f
+      for i = distance,1,-1
+        turtle.forward()
         
-      elseif direction_letter = b
-        for i = distance,1,-1
-          turtle.back()
+    elseif direction_letter = b
+      for i = distance,1,-1
+        turtle.back()
         
-      elseif direction_letter = u
-        for i = distance,1,-1
-          turtle.up()
+    elseif direction_letter = u
+      for i = distance,1,-1
+        turtle.up()
 
-      elseif direction_letter = d
-        for i = distance,1,-1
-          turtle.down()
+    elseif direction_letter = d
+      for i = distance,1,-1
+         turtle.down()
 
-      else
-        return "direction letter needs to be f,b,u or d"
-    end
+    else
+      return "direction letter needs to be f,b,u or d"
+end
         
 
