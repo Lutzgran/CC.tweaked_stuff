@@ -98,7 +98,7 @@ function go(str)
 end
 
 
-function trun(str)
+function turn(str)
 
     if string.lower(str) == "right" or string.lower(str) == "r" then
         turtle.turnRight()
