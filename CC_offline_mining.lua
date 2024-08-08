@@ -9,34 +9,70 @@ local current_pos = { xPos = 0, depth = 0, zPos = 0, dir = 0 }
 local saved_pos   = { xPos = 0, depth = 0, zPos = 0, dir = 0 }
 local home_pos    = { xPos = 0, depth = 0, zPos = 0, dir = 0 }
 
-local goTo
+local goToPos
 local Fuel
-local fuel_amount = ((2*xPos+zPos+depth)+7200)
+local fuel_amount 
+function excavateBetter(size,height)
+   local isFinished = False
+   local usehHeight = height ~= nil and heaight > 0
+   local heightCount = 0
 
-function dig(size)
+   if useHeight then
+      if startNextLevel() then
+         heightCount = heightCount + 1
+         isFinished = height >= heightCount
+      end
+   else
+      isFinisshed = startNextLevel()
+   end
 
-    local nilBLevel = dig("d") and go("d")
-    while nilBLevel do
+    while isFinished do
         for i = 0,size -1 do
-            
             for j = 0,size-1 do
-                turtle.dig()
-                goForward()
+                dig(f)
+                go(f)
             end
-            if then
-                trunRight()
-                turtle.dig()
-                goForward()
-                trunRight()
-            else
-                trunLeft()
-                turtle.dig()
-                goForward
-                trunLeft()
-            turtle.digDown()
-            goDown()
-            end       
+            if size ~= 
+               if i % 2 == 0 then
+                   trun(r)
+                   dig(f)
+                   go(f)
+                   trun(r)
+               else
+                   trun(l)
+                   dig(f)
+                   go(f)
+                   trun(l)
+               end
+            end  
         end
+        nilBLevel = dig("d") and go("d")
+        if size % 2 == 1 then
+            turn("r")
+            turn("r")
+        else
+            turn("r")
+        end
+        if useHeight then
+            if startNexyLevel() then
+            heightCount = heightCount + 1
+            isFinished = heaightCount >= heightCount
+            end
+         else
+            isFinisshed = startNextLevel()
+         end    
+         
+        nilBLevel = dig("d") and go("d")
+   end
+   
+   local function startNextlevel()
+      local atNext = go("d")
+      if not atNext then
+         dig("d")
+         atNext = go("d")
+      end
+   end 
+   return atNext
 end
 
 
@@ -111,30 +147,60 @@ function turn(str)
 end
 
 
-function refuel(lowFuel,returned)
+function goToPos(pos, order, canDig)
+   local isFinished = false
+   if order == nil then order = { "x", "z", "y" } end
+   if canDig == nil then canDig = false end
 
-    if lowFuel then
-    goTo(0,0,0,0)
-    Fuel = true
-
-    elseif returned then
-    Fuel = true
-    end
-    
-    if Fuel then
-    trunRight()
-    turtle.select(1)
-    turrle.suck()
-    turtle.refuel()
-    trunRight()
+   for f in order
+      if     f == string.lower("x") then moveX()
+      elseif f == string.lower("z") then moveZ()
+      else   f == string.lower("y") then moveY() end
    end
 
-    if turtle.getFuelLevel() < fuel_amount then
-        return
-            print("need more fuel!!!")
-    
-    end
+   local function moveX()
+      local xVector = [[]]
+
+   local function rotate(s,e)
+      local diff = s - e
+      local dir = {}
+      if (math.abs(dif) > 0) then
+         if     diff == -3 or diff ==  1 then dir = {1, "l"}
+         elseif diff ==  3 or diff == -1 then dir = {1, "r"}
+         else dir = {2, "r"}
+         for i = 0,dir[0] do
+            turn(dir[1])
+   end
+function copyPos(pos)
+   copy = { 1, 2, 3}
+   for k,v in current_pos do
+       
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
