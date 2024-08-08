@@ -12,6 +12,8 @@ local home_pos    = { xPos = 0, depth = 0, zPos = 0, dir = 0 }
 local goToPos
 local Fuel
 local fuel_amount 
+
+
 function excavateBetter(size,height)
    local isFinished = False
    local usehHeight = height ~= nil and heaight > 0
