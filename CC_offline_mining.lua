@@ -15,7 +15,6 @@ function getPos()
     return coords
 end
 
-
 function updateCoords(pos)
 
     pos[1][2][3] = gps.locate()
@@ -28,7 +27,9 @@ function findDir(currentPos(table))
 
     local coords = { x, y, z}
     local axis = 0
+    local x = false
     local atHome = false
+    local dir = ""
 
     if currentPos = home_pos then
         return atHome
@@ -42,11 +43,28 @@ function findDir(currentPos(table))
     end
 
     probe()
-    if coords[1] ~= currentPos[1] then axisX = coords[1]
-    else axisZ = probe[3]
+    if coords[1] ~= currentPos[1] then 
+        axis = coords[1]
+        x = true
+    else 
+        axis = coords[3]
     end
-end
 
+    if x then
+        if axis > currentPos[1] then
+            dir = "e"
+        else 
+            dir = "w"
+        end
+    else
+        if axis > currentPos[3] then
+            dir = "s"
+        else 
+            dir = "n"
+        end
+    end
+    return dir
+end
 
 function excavateBetter(size)
     local nilBLevel = dig("d") and go("d")
