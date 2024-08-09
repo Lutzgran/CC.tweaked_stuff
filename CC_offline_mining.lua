@@ -15,19 +15,48 @@ function getPos()
     return coords
 end
 
+
 function updateCoords(pos)
 
+    pos[1][2][3] = gps.locate()
+    return pos
     
-    
+end 
+
+
+function findDir(currentPos(table))
+
+    local coords = { x, y, z}
+    local axis = 0
+    local atHome = false
+
+    if currentPos = home_pos then
+        return atHome
+    end
+
+    local function probe()
+        dig(f)
+        go(f)
+        local coords = gps.locate 
+        go(b)
+    end
+
+    probe()
+    if coords[1] ~= currentPos[1] then axisX = coords[1]
+    else axisZ = probe[3]
+    end
 end
-   
+
+
 function excavateBetter(size)
     local nilBLevel = dig("d") and go("d")
     
     if restart then
         goToMiningSite()
         restart = false
-    end
+    else
+      updateCoords(home_pos)
+
     while nilBLevel do
         for i = 1,size do
             for j = 1,size do
