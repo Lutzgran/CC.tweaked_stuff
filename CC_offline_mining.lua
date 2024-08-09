@@ -9,11 +9,6 @@ local home_pos    = { xPos = 0, y = 0, zPos = 0, dir = 0 }
 homeAmount = (saved_pos[1] + saved_pos[2] + saved_pos[3])*2
 
 
-function getPos()
-    local xPos, depth, zPos = gps.locate()
-    local coords = {xPos ,depth ,zPos}
-    return coords
-end
 
 function updateCoords(pos)
 
