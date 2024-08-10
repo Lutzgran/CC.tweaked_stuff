@@ -1,11 +1,14 @@
 --needed to make a mining script that didnt mess up just because the chunk got unloaded or the server restarted
 --first make a folder for the settings
 -- { 0 = "n", 1 = "e", 2 = "s", 3 = "w" }
+-- { "xPos", "y", "zPos", "dir" }
 
-local current_pos = { "xPos", "y", "zPos", "dir" }
-local saved_pos   = { "xPos", "y", "zPos", "dir" }
-local home_pos    = { "xPos", "y", "zPos", "dir" }
+
+local current_pos = { xPos = 0, y = 0, zPos = 0, dir = 0}
+local saved_pos   = { xPos = 0, y = 0, zPos = 0, dir = 0}
+local home_pos    = { xPos = 0, y = 0, zPos = 0, dir = 0}
 homeAmount = (saved_pos[1] + saved_pos[2] + saved_pos[3])*2
+
 
 
 function excavateBetter(size)
@@ -20,13 +23,13 @@ function excavateBetter(size)
     else
         home_pos = updateCoords(home_pos)
         current_pos = updateCoords(current_pos)
-        current_pos["dir"] = findDir()
-        home_pos["dir"] = current_pos["dir"]
+        current_pos[4] = findDir()
+        home_pos[4] = current_pos[4]
         serialize(true,"last_known")
         serialize(home_pos,"home_pos")
     end
 
-    while saved_pos["y"] ~= (-60) do
+    while saved_pos[2] ~= (-60) do
         for i = 1,size do
             for j = 1,size do
                 dig("f")
@@ -52,7 +55,7 @@ function excavateBetter(size)
         else
             turn("r")
         end
-        current_pos = updateCoords(current_pos)
+        updateCoords(current_pos)
         saved_pos = current_pos
         serialize(saved_pos,"saved_pos")
         if inventoryCheck or fuelCheck then
@@ -74,7 +77,9 @@ function updateCoords(pos)
 
     local x , y , z = gps.locate()
 
-    pos{}
+    pos[1]=x
+    pos[2]=y
+    pos[3]=z
 
     return pos
     
@@ -89,7 +94,7 @@ function findDir()
     local check = false
     local atHome = false
     local dir = 0
-    currentPos ["x"]["y"]["z"] = gps.locate()
+    updateCoords(currentPos)
 
     if currentPos == home_pos then
         return atHome
@@ -98,26 +103,26 @@ function findDir()
     local function probe()
         dig("f")
         go("f")
-        coords["x"]["y"]["z"] = gps.locate()
+        coords = updateCoords(coords)
         go("b")
     end
 
     probe()
-    if coords["x"] ~= currentPos("x") then 
-        axis = coords["x"]
+    if coords[1] ~= currentPos[1] then 
+        axis = coords[1]
         check = true
     else 
-        axis = coords["z"]
+        axis = coords[3]
     end
 
     if check then
-        if axis > currentPos["x"] then
+        if axis > currentPos[1] then
             dir = 1
         else 
             dir = 3
         end
     else
-        if axis > currentPos["z"] then
+        if axis > currentPos[3] then
             dir = 2
         else 
             dir = 0
@@ -260,8 +265,8 @@ end
 
 function goToPos(pos)
 
-    local s_dir = saved_pos["dir"]
-    local e_dir = pos["dir"]
+    local s_dir = saved_pos[4]
+    local e_dir = pos[4]
     local diff = 0
     local x_dir = 0
     local z_dir = 0
@@ -285,58 +290,60 @@ function goToPos(pos)
         end
     end
     
-    if saved_pos["y"] <= pos["y"] then
-        for i = 1,findDiff("y") do
+    if saved_pos[2] <= pos[2] then
+        for i = 1,findDiff(2) do
             go("u")
         end
-        if saved_pos["xPos"] <= pos["xPos"] then
+        if saved_pos[1] <= pos[1] then
             rotate(s_dir,1)
             x_dir = 1
         else
             rotate(s_dir,3)
             x_dir = 3
         end
-        for i = 1,findDiff("xPos") do
+        for i = 1,findDiff(1) do
             go("f")
         end
-        if saved_pos["zPos"] <= pos["zPos"] then
+        if saved_pos[3] <= pos[3] then
             rotate(x_dir,2)
             z_dir = 2
         else
             rotate(x_dir,0)
             z_dir = 0
         end
-        for i = 1,findDiff("zPos") do
+        for i = 1,findDiff(3) do
             go("f")
         end
         rotate(z_dir,e_dir)
     else
-        if saved_pos["xPos"] <= pos["xPos"] then
+        if saved_pos[1] <= pos[1] then
             rotate(s_dir,1)
             x_dir = 1
         else
             rotate(s_dir,3)
             x_dir = 3
         end
-        for i = 1,findDiff("xPos") do
+        for i = 1,findDiff(1) do
             go("f")
         end
-        if saved_pos["zPos"] <= pos["zPos"] then
+        if saved_pos[3] <= pos[3] then
             rotate(x_dir,2)
             z_dir = 2
         else
             rotate(x_dir,0)
             z_dir = 0
         end
-        for i = 1,findDiff("zPos") do
+        for i = 1,findDiff(3) do
             go("f")
         end
-        for i = 1,findDiff("y") do
+        for i = 1,findDiff(2) do
             go("u")
         end
         rotate(z_dir,e_dir)
     end
-    if pos["xPos"]["y"]["zPos"] == gps.locate() then
+    local x , y , z = gps.locate()
+    updateCoords(pos)
+    if pos[1] == x and pos[2] == y and pos [3] == z then
         success = true
     end
     return success
