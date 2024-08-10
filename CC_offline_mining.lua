@@ -4,32 +4,38 @@
 -- { "xPos", "y", "zPos", "dir" }
 
 
-local current_pos = { xPos = 0, y = 0, zPos = 0, dir = 0}
-local saved_pos   = { xPos = 0, y = 0, zPos = 0, dir = 0}
-local home_pos    = { xPos = 0, y = 0, zPos = 0, dir = 0}
-homeAmount = (saved_pos[1] + saved_pos[2] + saved_pos[3])*2
+-- lag ein funksjon for å samanligne kordinater
 
 
+local current_pos = {}
+local saved_pos   = {}
+local home_pos    = {}
+local homeAmount = 0
 
-function excavateBetter(size)
+
+local function excavateBetter(size)
+
+    local check = unserialize("last_known")
     
-    if unserialize("last_known") then
-        serialize(false,"last_known")
+    if check then
         saved_pos = unserialize("saved_pos")
         home_pos = unserialize("home_pos")
+        homeAmount = (saved_pos[1] + saved_pos[2] + saved_pos[3])*2
         goOfLoad()
         reFuel()
         goToPos(saved_pos)
     else
+
         home_pos = updateCoords(home_pos)
         current_pos = updateCoords(current_pos)
         current_pos[4] = findDir()
+        --serialize(true,"last_known")
         home_pos[4] = current_pos[4]
-        serialize(true,"last_known")
         serialize(home_pos,"home_pos")
+        reFuel()
     end
 
-    while saved_pos[2] ~= (-60) do
+    while current_pos[2] ~= (-60) do
         for i = 1,size do
             for j = 1,size do
                 dig("f")
@@ -57,6 +63,7 @@ function excavateBetter(size)
         end
         updateCoords(current_pos)
         saved_pos = current_pos
+        homeAmount = (saved_pos[1] + saved_pos[2] + saved_pos[3])*2
         serialize(saved_pos,"saved_pos")
         if inventoryCheck or fuelCheck then
             goOfLoad()
@@ -254,7 +261,7 @@ function rotate(s,e)
         if     diff == -3 or diff ==  1 then dir = {1, "l"}
         elseif diff ==  3 or diff == -1 then dir = {1, "r"}
         else dir = {2, "r"} end
-        for i = 0,dir[0] do
+        for i = 1,dir[0] do
             turn(dir[1])
         end
     end
@@ -265,86 +272,88 @@ end
 
 function goToPos(pos)
 
-    local s_dir = saved_pos[4]
-    local e_dir = pos[4]
-    local diff = 0
-    local x_dir = 0
-    local z_dir = 0
-    local success = false
+    if pos ~= current_pos then
+        local s_dir = saved_pos[4]
+        local e_dir = pos[4]
+        local diff = 0
+        local x_dir = 0
+        local z_dir = 0
+        local success = false
 
-    local function findDiff(axis)
-    
-        if saved_pos[axis] <= 0 then
-            if pos[axis] <= 0 then
-                diff = math.abs(saved_pos[axis] - pos[axis])
+        local function findDiff(axis)
+
+            if saved_pos[axis] <= 0 then
+                if pos[axis] <= 0 then
+                    diff = math.abs(saved_pos[axis] - pos[axis])
+                else
+                    diff = math.abs(saved_pos[axis] + pos[axis])
+                end
             else
-                diff = math.abs(saved_pos[axis] + pos[axis])
+                if pos[axis] >= 0 then
+                    diff = math.abs(saved_pos[axis] - pos[axis])
+                else
+                    diff = math.abs(saved_pos[axis] + pos[axis])
+                end
+            return diff
             end
-        else
-            if pos[axis] >= 0 then
-                diff = math.abs(saved_pos[axis] - pos[axis])
+        end
+
+        if saved_pos[2] <= pos[2] then
+            for i = 1,findDiff(2) do
+                go("u")
+            end
+            if saved_pos[1] <= pos[1] then
+                rotate(s_dir,1)
+                x_dir = 1
             else
-                diff = math.abs(saved_pos[axis] + pos[axis])
+                rotate(s_dir,3)
+                x_dir = 3
             end
-        return diff
-        end
-    end
-    
-    if saved_pos[2] <= pos[2] then
-        for i = 1,findDiff(2) do
-            go("u")
-        end
-        if saved_pos[1] <= pos[1] then
-            rotate(s_dir,1)
-            x_dir = 1
+            for i = 1,findDiff(1) do
+                go("f")
+            end
+            if saved_pos[3] <= pos[3] then
+                rotate(x_dir,2)
+                z_dir = 2
+            else
+                rotate(x_dir,0)
+                z_dir = 0
+            end
+            for i = 1,findDiff(3) do
+                go("f")
+            end
+            rotate(z_dir,e_dir)
         else
-            rotate(s_dir,3)
-            x_dir = 3
+            if saved_pos[1] <= pos[1] then
+                rotate(s_dir,1)
+                x_dir = 1
+            else
+                rotate(s_dir,3)
+                x_dir = 3
+            end
+            for i = 1,findDiff(1) do
+                go("f")
+            end
+            if saved_pos[3] <= pos[3] then
+                rotate(x_dir,2)
+                z_dir = 2
+            else
+                rotate(x_dir,0)
+                z_dir = 0
+            end
+            for i = 1,findDiff(3) do
+                go("f")
+            end
+            for i = 1,findDiff(2) do
+                go("u")
+            end
+            rotate(z_dir,e_dir)
         end
-        for i = 1,findDiff(1) do
-            go("f")
+        local x , y , z = gps.locate()
+        updateCoords(pos)
+        if pos[1] == x and pos[2] == y and pos [3] == z then
+            success = true
         end
-        if saved_pos[3] <= pos[3] then
-            rotate(x_dir,2)
-            z_dir = 2
-        else
-            rotate(x_dir,0)
-            z_dir = 0
-        end
-        for i = 1,findDiff(3) do
-            go("f")
-        end
-        rotate(z_dir,e_dir)
-    else
-        if saved_pos[1] <= pos[1] then
-            rotate(s_dir,1)
-            x_dir = 1
-        else
-            rotate(s_dir,3)
-            x_dir = 3
-        end
-        for i = 1,findDiff(1) do
-            go("f")
-        end
-        if saved_pos[3] <= pos[3] then
-            rotate(x_dir,2)
-            z_dir = 2
-        else
-            rotate(x_dir,0)
-            z_dir = 0
-        end
-        for i = 1,findDiff(3) do
-            go("f")
-        end
-        for i = 1,findDiff(2) do
-            go("u")
-        end
-        rotate(z_dir,e_dir)
-    end
-    local x , y , z = gps.locate()
-    updateCoords(pos)
-    if pos[1] == x and pos[2] == y and pos [3] == z then
-        success = true
     end
     return success
 end
@@ -354,7 +363,8 @@ function serialize(data, name)
     if not fs.exists('/data') then
         fs.makeDir('/data')
     end
-    local f = fs.open('/data/'..name, 'w+')
+    fs.delete('/data/'..name)
+    local f = fs.open('/data/'..name, 'w')
     f.write(textutils.serialize(data))
     f.close()
 end
@@ -368,3 +378,5 @@ function unserialize(name)
     end
     return data
 end
+
+excavateBetter(5)
