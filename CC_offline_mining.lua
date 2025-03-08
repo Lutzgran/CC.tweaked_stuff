@@ -3,7 +3,7 @@
 
 -- do be warned this is riddled with bugs and bad coding. it will not work right when the input is a whole number and the gotopos funvtion will not work when going over 0x or 0z
 
--- test test
+-- ny test test
 
 -- { 0 = "n", 1 = "e", 2 = "s", 3 = "w" }
 -- { "xPos", "y", "zPos", "dir" }
