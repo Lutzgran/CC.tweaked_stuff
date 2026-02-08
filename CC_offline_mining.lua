@@ -1,39 +1,37 @@
 --needed to make a mining script that didnt mess up just because the chunk got unloaded or the server restarted
 --first make a folder for the settings
 
--- do be warned this is riddled with bugs and bad coding. it will not work right when the input is a whole number and the gotopos funvtion will not work when going over 0x or 0z
+-- do be warned this is riddled with bugs and bad coding. it will not work right when the input is a whole number and the gotopos function will not work when going over 0x or 0z
 
 -- ny test test
 
 -- { 0 = "n", 1 = "e", 2 = "s", 3 = "w" }
 -- { "xPos", "y", "zPos", "dir" }
 
-local args = {...}
+local args        = { ... }
 
 local current_pos = {}
 local saved_pos   = {}
-local home_pos    = { -49, 72, -34, 3}
-local homeAmount = 4000
-local size = tonumber( args[1] )
+local home_pos    = { -49, 72, -34, 3 }
+local homeAmount  = 4000
+local size        = tonumber(args[1])
 
 
 
 
 function excavateBetter(size)
-    
-
     if args[1] ~= nil then
-        fs.move("/data/startup","/startup")
+        fs.move("/data/startup", "/startup")
         updateCoords(current_pos)
-        transferCoords(current_pos,home_pos)
-        serialize(home_pos,"home_pos")
-        serialize(size,"size")
+        transferCoords(current_pos, home_pos)
+        serialize(home_pos, "home_pos")
+        serialize(size, "size")
         reFuel()
     else
         saved_pos = unserialize("saved_pos")
         home_pos = unserialize("home_pos")
         updateCoords(current_pos)
-        if inventoryCheck() == true  or fuelCheck(size) == true then
+        if inventoryCheck() == true or fuelCheck(size) == true then
             goOfLoad()
             if turtle.getFuelLevel() < 70000 then
                 reFuel()
@@ -43,8 +41,8 @@ function excavateBetter(size)
     end
 
     while current_pos[2] ~= -60 do
-        for i = 1,size do
-            for j = 1,size - 1 do
+        for i = 1, size do
+            for j = 1, size - 1 do
                 dig("f")
                 go("f")
             end
@@ -60,15 +58,15 @@ function excavateBetter(size)
                     go("f")
                     turn("l")
                 end
-            else   
+            else
                 turn("r")
                 turn("r")
             end
-        end 
+        end
         updateCoords(current_pos)
-        transferCoords(current_pos,saved_pos)
-        serialize(saved_pos,"saved_pos")
-        if inventoryCheck() == true  or fuelCheck(size) == true then
+        transferCoords(current_pos, saved_pos)
+        serialize(saved_pos, "saved_pos")
+        if inventoryCheck() == true or fuelCheck(size) == true then
             goOfLoad()
             if turtle.getFuelLevel() < 70000 then
                 reFuel()
@@ -82,49 +80,37 @@ function excavateBetter(size)
     goToPos(home_pos)
     fs.delete("/data/startup.lua")
     print("Finished mining")
-
 end
 
-
-function transferCoords(from,to)
-
-    for i = 1,4 do
+function transferCoords(from, to)
+    for i = 1, 4 do
         to[i] = from[i]
     end
-    
 end
 
-
-
 function updateCoords(pos)
+    local x, y, z = gps.locate()
 
-    local x , y , z = gps.locate()
-
-    pos[1]=x
-    pos[2]=y
-    pos[3]=z
-    pos[4]= findDir()
+    pos[1] = x
+    pos[2] = y
+    pos[3] = z
+    pos[4] = findDir()
 
     return pos
-    
-end 
-
+end
 
 function updateCoordsLocal(pos)
+    local x, y, z = gps.locate()
 
-    local x , y , z = gps.locate()
-
-    pos[1]=x
-    pos[2]=y
-    pos[3]=z
+    pos[1] = x
+    pos[2] = y
+    pos[3] = z
 
     return pos
-    
-end 
+end
 
 function findDir()
-
-    local coords = { 0, 0, 0}
+    local coords = { 0, 0, 0 }
     local currentPos = { 0, 0, 0 }
     local dir = 0
     updateCoordsLocal(currentPos)
@@ -138,27 +124,26 @@ function findDir()
 
     probe()
 
-    if coords[1] ~= currentPos[1] then 
+    if coords[1] ~= currentPos[1] then
         if coords[1] > currentPos[1] then
             dir = 1
-        else 
+        else
             dir = 3
         end
-    else 
+    else
         if coords[3] > currentPos[3] then
             dir = 2
-        else 
+        else
             dir = 0
         end
     end
     return dir
 end
 
-    
-function inventoryCheck()  
+function inventoryCheck()
     local full = true
 
-    for n = 1,16 do
+    for n = 1, 16 do
         local nCount = turtle.getItemCount(n)
         if nCount == 0 then
             full = false
@@ -168,35 +153,29 @@ function inventoryCheck()
     return full
 end
 
-
-function fuelCheck(size)  
+function fuelCheck(size)
     local notenough = false
-    local fuelAmount = homeAmount + ((size*size)*5)
-        
+    local fuelAmount = homeAmount + ((size * size) * 5)
+
     if turtle.getFuelLevel() < fuelAmount then
         notenough = true
     end
     return notenough
 end
 
-
 function goOfLoad()
-
     goToPos(home_pos)
     turn("r")
     turn("r")
-    for i = 1,16,1 do
+    for i = 1, 16, 1 do
         turtle.select(i)
         turtle.drop()
     end
     turn("r")
     turn("r")
-
 end
 
-
 function reFuel()
-
     local success = false
     turn("r")
     turtle.select(1)
@@ -211,17 +190,18 @@ function reFuel()
     end
     return success
 end
-  
 
 function dig(str)
     local success = false
-    if string.lower(str) == "forward" or string.lower(str)  == "f" then success = turtle.dig()
-    elseif  string.lower(str) == "up" or string.lower(str)  == "u" then success = turtle.digUp()
-    elseif string.lower(str) == "down" or string.lower(str) == "d" then success = turtle.digDown()
+    if string.lower(str) == "forward" or string.lower(str) == "f" then
+        success = turtle.dig()
+    elseif string.lower(str) == "up" or string.lower(str) == "u" then
+        success = turtle.digUp()
+    elseif string.lower(str) == "down" or string.lower(str) == "d" then
+        success = turtle.digDown()
     end
     return success
 end
-
 
 function go(str)
     local success = false
@@ -229,7 +209,7 @@ function go(str)
         if turtle.down() then
             success = true
         else
-            term.write("I'm stuck!")       
+            term.write("I'm stuck!")
         end
     end
     if string.lower(str) == "up" or string.lower(str) == "u" then
@@ -237,7 +217,6 @@ function go(str)
             success = true
         else
             term.write("I'm stuck!")
-            
         end
     end
     if string.lower(str) == "forward" or string.lower(str) == "f" then
@@ -245,7 +224,6 @@ function go(str)
             success = true
         else
             term.write("I'm stuck!")
-            
         end
     end
     if string.lower(str) == "back" or string.lower(str) == "b" then
@@ -253,34 +231,34 @@ function go(str)
             success = true
         else
             term.write("I'm stuck!")
-            
         end
     end
     return success
 end
 
-
 function turn(str)
-
     if string.lower(str) == "right" or string.lower(str) == "r" then
         turtle.turnRight()
-        current_pos[4] = (current_pos[4] + 1) % 4    
+        current_pos[4] = (current_pos[4] + 1) % 4
     end
     if string.lower(str) == "left" or string.lower(str) == "l" then
         turtle.turnLeft()
-        current_pos[4] = (current_pos[4] - 1) % 4    
+        current_pos[4] = (current_pos[4] - 1) % 4
     end
 end
 
-
-function rotate(s,e)
+function rotate(s, e)
     local diff = s - e
     local dir = {}
     if (math.abs(diff) > 0) then
-        if     diff == -3 or diff ==  1 then dir = {1, "l"}
-        elseif diff ==  3 or diff == -1 then dir = {1, "r"}
-        else dir = {2, "r"} end
-        for i = 1,dir[1] do
+        if diff == -3 or diff == 1 then
+            dir = { 1, "l" }
+        elseif diff == 3 or diff == -1 then
+            dir = { 1, "r" }
+        else
+            dir = { 2, "r" }
+        end
+        for i = 1, dir[1] do
             turn(dir[2])
         end
     end
@@ -288,18 +266,15 @@ end
 
 -- this dose not use the first direction to go forward so not fully optimised
 -- this has no dig function in it so it cant go through blocks
-function checkCoords(pos,pos2)
-
+function checkCoords(pos, pos2)
     if pos[1] == pos2[1] and pos[2] == pos2[2] and pos[3] == pos[3] then
         return true
     else
-        return false    
+        return false
     end
 end
 
-
 function goToPos(pos)
-    
     updateCoords(current_pos)
     local s_dir = current_pos[4]
     local e_dir = pos[4]
@@ -310,7 +285,6 @@ function goToPos(pos)
 
 
     local function findDiff(axis)
-
         if current_pos[axis] <= 0 then
             if pos[axis] <= 0 then
                 diff = math.abs(current_pos[axis] - pos[axis])
@@ -329,57 +303,57 @@ function goToPos(pos)
     end
 
     if current_pos[2] <= pos[2] then
-        for i = 1,findDiff(2) do
+        for i = 1, findDiff(2) do
             go("u")
         end
         if current_pos[1] <= pos[1] then
-            rotate(s_dir,1)
+            rotate(s_dir, 1)
             x_dir = 1
         else
-            rotate(s_dir,3)
+            rotate(s_dir, 3)
             x_dir = 3
         end
-        for i = 1,findDiff(1) do
+        for i = 1, findDiff(1) do
             go("f")
         end
         if current_pos[3] <= pos[3] then
-            rotate(x_dir,2)
+            rotate(x_dir, 2)
             z_dir = 2
         else
-            rotate(x_dir,0)
+            rotate(x_dir, 0)
             z_dir = 0
         end
-        for i = 1,findDiff(3) do
+        for i = 1, findDiff(3) do
             go("f")
         end
-        rotate(z_dir,e_dir)
+        rotate(z_dir, e_dir)
     else
         if current_pos[1] <= pos[1] then
-            rotate(s_dir,1)
+            rotate(s_dir, 1)
             x_dir = 1
         else
-            rotate(s_dir,3)
+            rotate(s_dir, 3)
             x_dir = 3
         end
-        for i = 1,findDiff(1) do
+        for i = 1, findDiff(1) do
             go("f")
         end
         if current_pos[3] <= pos[3] then
-            rotate(x_dir,2)
+            rotate(x_dir, 2)
             z_dir = 2
         else
-            rotate(x_dir,0)
+            rotate(x_dir, 0)
             z_dir = 0
         end
-        for i = 1,findDiff(3) do
+        for i = 1, findDiff(3) do
             go("f")
         end
-        for i = 1,findDiff(2) do
+        for i = 1, findDiff(2) do
             go("d")
         end
-        rotate(z_dir,e_dir)
+        rotate(z_dir, e_dir)
     end
-    local x , y , z = gps.locate()
+    local x, y, z = gps.locate()
     updateCoords(current_pos)
     if current_pos[1] == x and current_pos[2] == y and current_pos[3] == z then
         success = true
@@ -387,32 +361,29 @@ function goToPos(pos)
     return success
 end
 
-
 function serialize(data, name)
     if not fs.exists('/data') then
         fs.makeDir('/data')
     end
-    fs.delete('/data/'..name)
-    local f = fs.open('/data/'..name, 'w')
+    fs.delete('/data/' .. name)
+    local f = fs.open('/data/' .. name, 'w')
     f.write(textutils.serialize(data))
     f.close()
 end
 
-
 function unserialize(name)
-    if fs.exists('/data/'..name) then
-        local f = fs.open('/data/'..name, 'r')
+    if fs.exists('/data/' .. name) then
+        local f = fs.open('/data/' .. name, 'r')
         data = textutils.unserialize(f.readAll())
         f.close()
     end
     return data
 end
 
-
 if args[1] == nil then
     size = unserialize("size")
 else
-    size = tonumber( args[1] )
+    size = tonumber(args[1])
 end
 
 
